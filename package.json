@@ -1,0 +1,18 @@
+{
+  "name": "tie",
+  "version": "0.1.0",
+  "description": "Library for interface description extraction",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "tie",
+    "doc"
+  ],
+  "author": "lanyueos@qq.com",
+  "license": "MIT",
+  "dependencies": {
+    "glob": "^7.1.6"
+  }
+}
