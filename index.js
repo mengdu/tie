@@ -28,16 +28,23 @@ async function parse (entry, options) {
         if (markdown) {
             markdown = meta + '\n\n' + markdown
         }
-        arr.push({
+    
+        const item = {
             file,
             filename,
             chunks: chunks,
             markdown: markdown
-        })
+        }
+
+        arr.push(item)
 
         if (options.dest && markdown) {
             const docFile = path.resolve(options.dest, filename.replace(path.extname(filename), '.md'))
             await util.promisify(fs.writeFile)(docFile, markdown)
+        }
+
+        if (typeof options.fn === 'function') {
+            options.fn(item)
         }
     }
     return arr

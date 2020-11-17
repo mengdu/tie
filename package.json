@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "description": "Library for interface description extraction",
   "main": "index.js",
+  "bin": {
+    "tie": "cli.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -13,6 +16,7 @@
   "author": "lanyueos@qq.com",
   "license": "MIT",
   "dependencies": {
+    "commander": "^6.2.0",
     "glob": "^7.1.6"
   }
 }

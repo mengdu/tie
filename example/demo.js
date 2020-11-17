@@ -55,13 +55,11 @@ function Login () {}
 
 lib.parse(path.resolve(__dirname, './'), {
     dest: path.resolve(__dirname, './docs'),
-    disableDest: false,
     ignore: [
         'node_modules/**/*.js'
     ],
     // fn (req) {
     //     console.log(req)
-    //     return '# hello'
     // }
 }).then(data => {
     console.log(data)
