@@ -4,15 +4,15 @@ const glob = require('glob')
 const util = require('util')
 const lib = require('./lib')
 
-async function parse (entry, dest, options) {
+async function parse (entry, options) {
     if (!options) options = {}
     const files = await util.promisify(glob)(options.pattern || '**/**.js', {
         cwd: entry,
         ignore: options.ignore || []
     })
 
-    if (!options.disableDest && !fs.existsSync(dest)) {
-        fs.mkdirSync(dest, { recursive: true })
+    if (options.dest && !fs.existsSync(options.dest)) {
+        fs.mkdirSync(options.dest, { recursive: true })
     }
 
     const tie = new lib()
@@ -21,16 +21,23 @@ async function parse (entry, dest, options) {
         const filename = files[i]
         const file = path.resolve(entry, filename)
         const code = await util.promisify(fs.readFile)(file, { encoding: 'utf-8' })
-        const md = tie.toMarkdown(code, options.fn)
-
+        const chunks = tie.toMarkdown(code)
+        const meta = `---\nfilename: ${filename}\ndate: ${Date.now()}\n---`
+        let markdown = chunks.map(e => e.markdown).join('\n')
+        
+        if (markdown) {
+            markdown = meta + '\n\n' + markdown
+        }
         arr.push({
             file,
             filename,
-            text: md
+            chunks: chunks,
+            markdown: markdown
         })
 
-        if (!options.disableDest && md) {
-            await util.promisify(fs.writeFile)(path.resolve(dest, filename.replace(path.extname(filename), '.md')), md)
+        if (options.dest && markdown) {
+            const docFile = path.resolve(options.dest, filename.replace(path.extname(filename), '.md'))
+            await util.promisify(fs.writeFile)(docFile, markdown)
         }
     }
     return arr

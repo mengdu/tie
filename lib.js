@@ -1,7 +1,79 @@
 
+function toMarkdown (request) {
+    const arr = []
+    if (request.title) {
+        arr.push(`### ${request.title}\n`)
+    }
+
+    if (request.path) {
+        arr.push(`\`\`\`\n${(request.method || 'GET').toUpperCase()} ${request.path}\n\`\`\`\n`)
+    }
+
+    if (request.description) {
+        arr.push(`${request.description}\n`)
+    }
+
+    if (request.headers && request.headers.length > 0) {
+        arr.push('#### Headers')
+        const tabls = [
+            `| Key | Type | Required | Description |`,
+            `| :-----| :---- | :----: | :---- |`,
+        ]
+        request.headers.forEach(item => {
+            tabls.push(`| ${item.key} | ${item.type} | ${item.optional ? 'False' : 'True'} | ${item.des} |`)
+        })
+
+        arr.push('\n' + tabls.join('\n') + '\n')
+    }
+
+    if (request.query && request.query.length > 0) {
+        arr.push('#### Query')
+        const tabls = [
+            `| Key | Type | Required | Description |`,
+            `| :-----| :---- | :----: | :---- |`,
+        ]
+        request.query.forEach(item => {
+            tabls.push(`| ${item.key} | ${item.type} | ${item.optional ? 'False' : 'True'} | ${item.des} |`)
+        })
+
+        arr.push('\n' + tabls.join('\n') + '\n')
+    }
+
+    if (request.body && request.body.length > 0) {
+        arr.push('#### Body')
+        if (request.type) {
+            arr.push(`\n\`Content-Type: ${request.type}\``)
+        }
+        const tabls = [
+            `| Key | Type | Required | Description |`,
+            `| :-----| :---- | :----: | :---- |`,
+        ]
+        request.body.forEach(item => {
+            tabls.push(`| ${item.key} | ${item.type} | ${item.optional ? 'False' : 'True'} | ${item.des} |`)
+        })
+
+        arr.push('\n' + tabls.join('\n') + '\n')
+    }
+
+    if (request.response && request.response.length > 0) {
+        arr.push('#### Response')
+        const tabls = [
+            `| Key | Type | Description |`,
+            `| :-----| :---- | :---- |`,
+        ]
+        request.response.forEach(item => {
+            tabls.push(`| ${item.key} | ${item.type} | ${item.des} |`)
+        })
+
+        arr.push('\n' + tabls.join('\n') + '\n')
+    }
+
+    return arr.join('\n')
+}
+
 class Tie {
-    constructor () {
-        this.TAG = 'tie'
+    constructor (tag) {
+        this.TAG = tag || 'tie'
     }
 
     /**
@@ -112,11 +184,11 @@ class Tie {
                         request.response.push(line.value)
                         break
                     default:
-                        if (!Array.isArray(request.ext)) {
-                            request.ext = []
+                        if (!Array.isArray(request.others)) {
+                            request.others = []
                         }
-                        if (line.value) {
-                            request.ext.push({ symbol: line.symbol, value: line.text })
+                        if (line.text) {
+                            request.others.push({ symbol: line.symbol, value: line.text })
                         }
                 }
             }
@@ -127,82 +199,11 @@ class Tie {
         return arr
     }
 
-    toMarkdown (text, fn) {
+    toMarkdown (text) {
         return this.toRequest(text).map(request => {
-            if (fn && typeof fn === 'function') {
-                return fn(request)
-            }
-
-            const arr = []
-            if (request.title) {
-                arr.push(`### ${request.title}\n`)
-            }
-
-            if (request.path) {
-                arr.push(`\`\`\`\n${(request.method || 'GET').toUpperCase()} ${request.path}\n\`\`\`\n`)
-            }
-
-            if (request.description) {
-                arr.push(`${request.description}\n`)
-            }
-
-            if (request.headers && request.headers.length > 0) {
-                arr.push('#### Headers')
-                const tabls = [
-                    `| Key | Type | Required | Description |`,
-                    `| :-----| :---- | :----: | :---- |`,
-                ]
-                request.headers.forEach(item => {
-                    tabls.push(`| ${item.key} | ${item.type} | ${item.optional ? 'False' : 'True'} | ${item.des} |`)
-                })
-
-                arr.push('\n' + tabls.join('\n') + '\n')
-            }
-
-            if (request.query && request.query.length > 0) {
-                arr.push('#### Query')
-                const tabls = [
-                    `| Key | Type | Required | Description |`,
-                    `| :-----| :---- | :----: | :---- |`,
-                ]
-                request.query.forEach(item => {
-                    tabls.push(`| ${item.key} | ${item.type} | ${item.optional ? 'False' : 'True'} | ${item.des} |`)
-                })
-
-                arr.push('\n' + tabls.join('\n') + '\n')
-            }
-
-            if (request.body && request.body.length > 0) {
-                arr.push('#### Body')
-                if (request.type) {
-                    arr.push(`\n\`Content-Type: ${request.type}\``)
-                }
-                const tabls = [
-                    `| Key | Type | Required | Description |`,
-                    `| :-----| :---- | :----: | :---- |`,
-                ]
-                request.body.forEach(item => {
-                    tabls.push(`| ${item.key} | ${item.type} | ${item.optional ? 'False' : 'True'} | ${item.des} |`)
-                })
-
-                arr.push('\n' + tabls.join('\n') + '\n')
-            }
-
-            if (request.response && request.response.length > 0) {
-                arr.push('#### Response')
-                const tabls = [
-                    `| Key | Type | Description |`,
-                    `| :-----| :---- | :---- |`,
-                ]
-                request.response.forEach(item => {
-                    tabls.push(`| ${item.key} | ${item.type} | ${item.des} |`)
-                })
-
-                arr.push('\n' + tabls.join('\n') + '\n')
-            }
-
-            return arr.join('\n')
-        }).join('\n\n')
+            request.markdown = toMarkdown(request)
+            return request
+        })
     }
 }
 

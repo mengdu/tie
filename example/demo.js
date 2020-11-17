@@ -53,7 +53,8 @@ function Login () {}
 // tie.parseKey({ symbol: 'key2', text: '{number} [page=1] 页码' })
 
 
-lib.parse(path.resolve(__dirname, './'), path.resolve(__dirname, './docs'), {
+lib.parse(path.resolve(__dirname, './'), {
+    dest: path.resolve(__dirname, './docs'),
     disableDest: false,
     ignore: [
         'node_modules/**/*.js'
@@ -64,5 +65,5 @@ lib.parse(path.resolve(__dirname, './'), path.resolve(__dirname, './docs'), {
     // }
 }).then(data => {
     console.log(data)
+    fs.writeFileSync(path.resolve(__dirname, './data.json'), JSON.stringify(data))
 })
-
