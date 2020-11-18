@@ -44,7 +44,7 @@ async function main() {
         pattern: pattern,
         ignore: ignore,
         fn (file) {
-            console.log(`${file.file} ${file.chunks.length}`)
+            console.log(`${file.file} ${file.apis.length}`)
         }
     })
 }

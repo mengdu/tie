@@ -21,9 +21,9 @@ async function parse (entry, options) {
         const filename = files[i]
         const file = path.resolve(entry, filename)
         const code = await util.promisify(fs.readFile)(file, { encoding: 'utf-8' })
-        const chunks = tie.toMarkdown(code)
+        const apis = tie.toMarkdown(code)
         const meta = `---\nfilename: ${filename}\ndate: ${Date.now()}\n---`
-        let markdown = chunks.map(e => e.markdown).join('\n')
+        let markdown = apis.map(e => e.markdown).join('\n')
         
         if (markdown) {
             markdown = meta + '\n\n' + markdown
@@ -32,7 +32,7 @@ async function parse (entry, options) {
         const item = {
             file,
             filename,
-            chunks: chunks,
+            apis: apis,
             markdown: markdown
         }
 

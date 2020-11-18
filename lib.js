@@ -25,11 +25,12 @@ function toMarkdown (request) {
     if (request.headers && request.headers.length > 0) {
         arr.push('#### Headers')
         const tabls = [
-            `| Key | Type | Required | Description |`,
-            `| :-----| :---- | :----: | :---- |`,
+            `| Key | Type | Required | Default | Description |`,
+            `| :-----| :---- | :----: | :---- | :---- |`,
         ]
         request.headers.forEach(item => {
-            tabls.push(`| ${item.key} | ${item.type} | ${item.optional ? 'False' : 'True'} | ${item.des} |`)
+            const defaultValue = item.defaultValue === undefined ? '—' : `\`${item.defaultValue}\``
+            tabls.push(`| ${item.key} | ${item.type} | ${item.optional ? 'False' : 'True'} | ${defaultValue} | ${item.des} |`)
         })
 
         arr.push('\n' + tabls.join('\n') + '\n')
@@ -38,11 +39,12 @@ function toMarkdown (request) {
     if (request.query && request.query.length > 0) {
         arr.push('#### Query')
         const tabls = [
-            `| Key | Type | Required | Description |`,
-            `| :-----| :---- | :----: | :---- |`,
+            `| Key | Type | Required | Default | Description |`,
+            `| :-----| :---- | :----: | :---- | :---- |`,
         ]
         request.query.forEach(item => {
-            tabls.push(`| ${item.key} | ${item.type} | ${item.optional ? 'False' : 'True'} | ${item.des} |`)
+            const defaultValue = item.defaultValue === undefined ? '—' : `\`${item.defaultValue}\``
+            tabls.push(`| ${item.key} | ${item.type} | ${item.optional ? 'False' : 'True'} | ${defaultValue} | ${item.des} |`)
         })
 
         arr.push('\n' + tabls.join('\n') + '\n')
@@ -54,11 +56,12 @@ function toMarkdown (request) {
             arr.push(`\n\`Content-Type: ${request.type}\``)
         }
         const tabls = [
-            `| Key | Type | Required | Description |`,
-            `| :-----| :---- | :----: | :---- |`,
+            `| Key | Type | Required | Default | Description |`,
+            `| :-----| :---- | :----: | :---- | :---- |`,
         ]
         request.body.forEach(item => {
-            tabls.push(`| ${item.key} | ${item.type} | ${item.optional ? 'False' : 'True'} | ${item.des} |`)
+            const defaultValue = item.defaultValue === undefined ? '—' : `\`${item.defaultValue}\``
+            tabls.push(`| ${item.key} | ${item.type} | ${item.optional ? 'False' : 'True'} | ${defaultValue} | ${item.des} |`)
         })
 
         arr.push('\n' + tabls.join('\n') + '\n')
@@ -216,7 +219,6 @@ class Tie {
                         request.version = line.text
                         break
                     case 'code':
-                        console.log(line)
                         request.codes.push(...line.text.split(','))
                         break
                     case 'tags':
