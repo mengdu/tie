@@ -5,12 +5,21 @@ function toMarkdown (request) {
         arr.push(`### ${request.title}\n`)
     }
 
+    if (request.tags) {
+        arr.push(request.tags.split(',').map(e => `\`${e}\``).join(', ') + '\n')
+    }
+
     if (request.path) {
         arr.push(`\`\`\`\n${(request.method || 'GET').toUpperCase()} ${request.path}\n\`\`\`\n`)
     }
 
     if (request.description) {
         arr.push(`${request.description}\n`)
+    }
+
+    if (request.changes.length > 0) {
+        arr.push(`**Changes:**\n`)
+        arr.push(request.changes.map(e => `+ ${e}`).join('\n') + '\n')
     }
 
     if (request.headers && request.headers.length > 0) {
@@ -68,6 +77,16 @@ function toMarkdown (request) {
         arr.push('\n' + tabls.join('\n') + '\n')
     }
 
+    if (request.codes.length > 0) {
+        arr.push('**Errcode:**\n')
+        arr.push(request.codes.map(e => `+ \`${e}\``).join('\n') + '\n')
+    }
+
+    if (request.author) {
+        arr.push('#### Contact\n')
+        arr.push(request.author.split(',').map(e => `+ [${e}](#)`).join('\n') + '\n')
+    }
+
     return arr.join('\n')
 }
 
@@ -92,7 +111,7 @@ class Tie {
                 let data = {}
                 // @symbol {type} [key] - des
                 line.replace(/@(\w*) +(.*)/, function (raw, symbol, text) {
-                    data = { raw, symbol, text }
+                    data = { raw, symbol, text: text.trim() }
                 })
                 const value = this.parseKey(data)
                 return {
@@ -146,10 +165,17 @@ class Tie {
     toRequest (text) {
         const arr = this.parse(text).map(lines => {
             const request = {
+                title: '',
+                description: '',
+                method: '',
+                path: '',
+                type: '',
                 query: [],
                 body: [],
                 headers: [],
                 response: [],
+                codes: [], // 响应错误码列表
+                changes: [], // 改动过说明
                 examples: []
             }
             for (const i in lines) {
@@ -182,6 +208,22 @@ class Tie {
                         break
                     case 'response':
                         request.response.push(line.value)
+                        break
+                    case 'author':
+                        request.author = line.text
+                        break
+                    case 'version':
+                        request.version = line.text
+                        break
+                    case 'code':
+                        console.log(line)
+                        request.codes.push(...line.text.split(','))
+                        break
+                    case 'tags':
+                        request.tags = line.text
+                        break
+                    case 'change':
+                        request.changes.push(line.text)
                         break
                     default:
                         if (!Array.isArray(request.others)) {
