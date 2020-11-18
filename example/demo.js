@@ -20,13 +20,22 @@ function Index () {}
 
 /**
  * @tie
- * @route POST /login
- * @title 登录
- * @des 接口说明
- * @body {string} username 用户名
- * @body {string} password 密码
- * @response {object} data 用户数据
- * @response {string} token Token
+ * @author lanyueos@qq.com,ohter@gmail.com
+ * @version 1.0
+ * @code 0,10,200
+ * @tags login,sign-in
+ * @change Add feature 1 (2020-11-17)
+ * @change Add feature 2 (2020-11-18)
+ * @route POST /test
+ * @title Sign In
+ * @des Log on user
+ * @query {number} [page=1] Page number
+ * @query {number} [page=] Page size
+ * @query {number} [pageSize=10] Page size
+ * @body {string} username Username
+ * @body {string} password Password
+ * @response {object} data User Profile
+ * @response {string} token Session Token
  * @example example/login
  * **/
 function Login () {}
@@ -65,3 +74,11 @@ lib.parse(path.resolve(__dirname, './'), {
     console.log(data)
     fs.writeFileSync(path.resolve(__dirname, './data.json'), JSON.stringify(data))
 })
+
+// t = new lib.Tie()
+
+// const data = t.toRequest(`
+
+// `)
+
+// console.log(data[0])
