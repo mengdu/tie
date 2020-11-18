@@ -152,8 +152,8 @@ class Tie {
             if (key && key.indexOf('=') > -1) {
                 [key, defaultValue = ''] = key.split('=')
             }
-
-            data = { type, key, des: (arr[1] || '').trim() || '', optional: optional, defaultValue: defaultValue }
+            const des = arr.splice(1).join(' ')
+            data = { type, key, des: (des || '').trim() || '', optional: optional, defaultValue: defaultValue }
         })
 
         if (data === null) {
