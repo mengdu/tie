@@ -45,12 +45,15 @@ async function main() {
     }
 
     if (program.bundle) {
+        const bundleFile = path.isAbsolute(program.bundle)
+            ? program.bundle
+            : path.resolve(process.cwd(), program.bundle)
         try {
-            bundle = require(program.bundle)
-            if (!bundle || typeof bundle.render !== 'function') {
-                console.error('Bundle handler file must be a js file and export {render: (req) => string;}')
-                process.exit(1)
-            }
+            bundle = require(bundleFile)
+            // if (!bundle || typeof bundle.render !== 'function') {
+            //     console.error('Bundle handler file must be a js file and export {render: async () => string;}')
+            //     process.exit(1)
+            // }
         } catch (err) {
             console.error(err.message)
             process.exit(1)
