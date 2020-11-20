@@ -11,7 +11,9 @@ program
     .name('tie')
     .version(pkg.version)
     .description('Extracting description to generate markdown document.')
-    .arguments('<entry> <dest>')
+    .arguments('<entry>')
+    .option('--dest <dir>', 'Output folder')
+    .option('--log [enable]', 'Enable logs', '0')
     .option('--match <pattern>', 'Match pattern', '**/*.js')
     .option('-i --ignore <file>', 'Ignore file', 'node_modules/**/*.js')
     .option('-b --bundle <file>', 'Bundle handler javascript file')
@@ -20,16 +22,16 @@ program
     .parse(process.argv)
 
 async function main() {
-    if (!program.args[0] || !program.args[1]) {
+    if (!program.args[0]) {
         program.help()
         process.exit(0)
     }
     const entry = path.isAbsolute(program.args[0])
-        ? program.args
+        ? program.args[0]
         : path.resolve(process.cwd(), program.args[0])
-    const dest = path.isAbsolute(program.args[1])
-        ? program.args
-        : path.resolve(process.cwd(), program.args[1])
+    const dest = !program.dest ? undefined : path.isAbsolute(program.dest)
+        ? program.dest
+        : path.resolve(process.cwd(), program.dest)
 
     let pattern = undefined
     let ignore = undefined
@@ -59,19 +61,21 @@ async function main() {
             process.exit(1)
         }
     }
-    
+
     const data = await lib.parse(entry, {
         dest: dest,
         pattern: pattern,
         ignore: ignore,
         bundle: bundle,
         fn (file) {
-            console.log(`${file.file} ${file.apis.length}`)
+            if (+program.log === 1) {
+                console.log(`[tie]: ${file.file} ${file.apis.length}`)
+            }
         }
     })
 
     if (output) {
-        fs.writeFileSync(path.resolve(dest, output), JSON.stringify(data))
+        fs.writeFileSync(dest ? path.resolve(dest, output) : output, JSON.stringify(data))
     }
 }
 

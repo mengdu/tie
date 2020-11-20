@@ -4,6 +4,10 @@ const glob = require('glob')
 const util = require('util')
 const lib = require('./lib')
 
+/**
+ * @param {string} entry
+ * @param {{pattern?: string; dest?: string; bundle?: { render?: () => Promise<string>; done?: () => Promise<void>; };}} [options]
+ * **/
 async function parse (entry, options) {
     if (!options) options = {}
     const files = await util.promisify(glob)(options.pattern || '**/**.js', {
