@@ -23,34 +23,41 @@ async function parse (entry, options) {
         const file = path.resolve(entry, filename)
         const code = await util.promisify(fs.readFile)(file, { encoding: 'utf-8' })
         const apis = tie.toMarkdown(code)
+        const metaArr = [
+            { key: 'filename', value: filename },
+            { key: 'createdAt', value: Date.now() }
+        ]
+        const meta = {}
+
+        // 取 meta
+        for (const j in apis) {
+            if (apis[j].chunkType === 'meta') {
+                apis[j].raw.filter(e => e.symbol).forEach(e => {
+                    metaArr.push({ key: e.symbol, value: e.text })
+                })
+            }
+        }
+
+        const metaMarkdown = metaArr.map(e => {
+            meta[e.key] = e.value
+            return `${e.key}: ${e.value}`
+        }).join('\n')
+
         let markdown = ''
 
         if (options.bundle && typeof options.bundle.render === 'function') {
             markdown = await options.bundle.render(apis, filename, file)
         } else {
             markdown = apis.filter(e => e.chunkType !== 'meta').map(e => e.markdown).join('\n')
-            const metaArr = [
-                { key: 'filename', value: filename },
-                { key: 'createdAt', value: Date.now() }
-            ]
-
-            // 取 meta
-            for (const j in apis) {
-                if (apis[j].chunkType === 'meta') {
-                    apis[j].raw.filter(e => e.symbol).forEach(e => {
-                        metaArr.push({ key: e.symbol, value: e.text })
-                    })
-                }
-            }
-
-            markdown = `---\n${metaArr.map(e => `${e.key}: ${e.value}`).join('\n')}\n---\n\n` + markdown
+            markdown = metaMarkdown ? `---\n${metaMarkdown}\n---\n\n` + markdown : markdown
         }
     
         const item = {
             file,
             filename,
             apis: apis,
-            markdown: markdown
+            markdown: markdown,
+            meta
         }
 
         arr.push(item)
