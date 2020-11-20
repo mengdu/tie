@@ -96,6 +96,10 @@ function toMarkdown (request) {
 class Tie {
     constructor (tag) {
         this.TAG = tag || 'tie'
+        // /\/\*\*\W*\*\W*tie\W?[\w\W]*?\*\*\//g
+        this.chunkRegExp = new RegExp(`\\/\\*\\*\\W*\\*\\W*@${this.TAG}\W?[\\w\\W]*?\\*\\*\\/`, 'g')
+        this.tagLineRegExp = new RegExp(`^\\W*@${this.TAG}`, 'i')
+        this.chunkTypeRegExp = new RegExp(`@${this.TAG}:(.+)`, 'i')
     }
 
     /**
@@ -103,14 +107,15 @@ class Tie {
      * @param {string} text
      * **/
     parse (text) {
-        // /\/\*\*\W*\*\W*tie\W?[\w\W]*?\*\*\//g
-        const reg = new RegExp(`\\/\\*\\*\\W*\\*\\W*@${this.TAG}\W?[\\w\\W]*?\\*\\*\\/`, 'g')
-        const chunks = text.match(reg)
+        const chunks = text.match(this.chunkRegExp)
 
         if (chunks === null) return []
 
         const arr = chunks.map(e => {
             const lines = e.split(/\n/).map(line => {
+                /**
+                 * @type {{ raw: string; symbol?: string; text?: string }}
+                 * **/
                 let data = { raw: line }
                 // @symbol {type} [key] - des
                 line.replace(/@(\w*) +(.*)/, function (raw, symbol, text) {
@@ -131,6 +136,7 @@ class Tie {
     /**
      * @param {string} symbol
      * @param {string} text
+     * @returns {{ type: string; key: string; des: string; optional: boolean; defaultValue: string; } | [string, string]}
      * **/
     parseKey ({ text }) {
         if (!text) return null
@@ -168,6 +174,7 @@ class Tie {
     toRequest (text) {
         const arr = this.parse(text).map(lines => {
             const request = {
+                raw: lines,
                 title: '',
                 description: '',
                 method: '',
@@ -245,7 +252,31 @@ class Tie {
 
     toMarkdown (text) {
         return this.toRequest(text).map(request => {
-            request.markdown = toMarkdown(request)
+            let chunkType = 'api'
+            for (const i in request.raw) {
+                if (this.tagLineRegExp.test(request.raw[i].raw)) {
+                    const arr = request.raw[i].raw.match(this.chunkTypeRegExp)
+                    if (arr) {
+                        chunkType = arr[1].toLowerCase()
+                    }
+                }
+            }
+
+            request.chunkType = chunkType
+            if (chunkType === 'meta') {
+                // 生成meta信息
+                request.markdown = '---\n' + request.raw.filter(e => e.symbol).map(e => {
+                    return `${e.symbol}: ${e.text}`
+                }).join('\n') + '\n---\n'
+            } else if (chunkType === 'api') {
+                request.markdown = toMarkdown(request)
+            } else {
+                // 提取注释内容（去掉首尾两行， 去掉第二行标记行）
+                request.markdown = request.raw.slice(2, request.raw.length - 1).map(e => {
+                    return e.raw.replace(/^((\/| +)\*?(( ?\*(\*\/)?)| ))/, '')
+                }).join('\n')
+            }
+            
             return request
         })
     }

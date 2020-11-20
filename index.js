@@ -18,22 +18,28 @@ async function parse (entry, options) {
         const filename = files[i]
         const file = path.resolve(entry, filename)
         const code = await util.promisify(fs.readFile)(file, { encoding: 'utf-8' })
-        let apis = []
+        const apis = tie.toMarkdown(code)
+        let markdown = ''
 
         if (options.bundle && typeof options.bundle.render === 'function') {
-            apis = await Promise.all(tie.toRequest(code).map(async e => {
-                e.markdown = await options.bundle.render(e)
-                return e
-            }))
+            markdown = await options.bundle.render(apis, filename, file)
         } else {
-            apis = tie.toMarkdown(code)
-        }
+            markdown = apis.filter(e => e.chunkType !== 'meta').map(e => e.markdown).join('\n')
+            const metaArr = [
+                { key: 'filename', value: filename },
+                { key: 'createdAt', value: Date.now() }
+            ]
 
-        const meta = `---\nfilename: ${filename}\ndate: ${Date.now()}\n---`
-        let markdown = apis.map(e => e.markdown).join('\n')
-        
-        if (markdown) {
-            markdown = meta + '\n\n' + markdown
+            // 取 meta
+            for (const j in apis) {
+                if (apis[j].chunkType === 'meta') {
+                    apis[j].raw.filter(e => e.symbol).forEach(e => {
+                        metaArr.push({ key: e.symbol, value: e.text })
+                    })
+                }
+            }
+
+            markdown = `---\n${metaArr.map(e => `${e.key}: ${e.value}`).join('\n')}\n---\n\n` + markdown
         }
     
         const item = {
