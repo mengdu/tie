@@ -111,7 +111,7 @@ class Tie {
 
         const arr = chunks.map(e => {
             const lines = e.split(/\n/).map(line => {
-                let data = {}
+                let data = { raw: line }
                 // @symbol {type} [key] - des
                 line.replace(/@(\w*) +(.*)/, function (raw, symbol, text) {
                     data = { raw, symbol, text: text.trim() }
