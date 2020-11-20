@@ -1,3 +1,19 @@
+/**
+ * @tie:meta
+ * @title demo
+ * @description This is a demo.
+ * @author lanyueos@qq.com
+ * **/
+
+/**
+ * @tie:markdown
+ * 
+ * # Demo
+ * 
+ * > This is a demo.
+ * 
+ * **/
+
 const fs = require('fs')
 const path = require('path')
 const lib = require('../index')
@@ -75,10 +91,27 @@ lib.parse(path.resolve(__dirname, './'), {
     fs.writeFileSync(path.resolve(__dirname, './data.json'), JSON.stringify(data))
 })
 
-// t = new lib.Tie()
+t = new lib.Tie()
 
-// const data = t.toRequest(`
+// const data = t.toMarkdown(`
+//     /**
+//      * @tie:meta
+//      * @title demo
+//      * @group user
+//      * **/
 
-// `)
+//     /**
+//      * @tie:md
+//      * ## 说明
+//      * 
+//      * > xxxx
+//      * 
+//      * + sdf
+//      * + asdf
+//      * + sdf
+//      * 
+//      * [](../aaa)
+//      **/
+//     `)
 
-// console.log(data[0])
+// console.log(data)

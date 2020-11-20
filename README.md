@@ -28,11 +28,16 @@ bundle.js
 
 ```js
 // bundle.js
-exports.render = async function (request) {
-	console.log(request)
+
+// Custom rendering handler
+exports.render = async function (requests, file, filename) {
+  console.log(requests)
+  
+  // Redefining rendering
 	return '# Hi'
 }
 
+// Do something else when you're done
 exports.done = async function (files) {
 	console.log(files.length)
 }
@@ -40,7 +45,8 @@ exports.done = async function (files) {
 
 ## Pattern
 
-+ `@tie` 标记接口，放在开头
++ `@tie` 标记接口，有标记的注释才会呗解析，放在注释开头
++ `@tie:<type>` 标记块类型，目前有 `meta`，`markdown` 类型
 + `@title` 接口名称
 + `@des` 接口说明
 + `@tags` 标签，多个逗号分隔
@@ -56,7 +62,36 @@ exports.done = async function (files) {
 + `@change` 接口变更记录，可以多个
 + `@example` 请求案例说明
 
-**e.g**
+**tie:meta**
+
+meta 信息块
+
+```js
+/**
+ * @tie:meta
+ * @key value
+ * @key1 value1
+ * @key2 value2
+ * ...
+ * **/
+```
+
+**tie:markdown**
+
+meta 信息块
+
+```js
+/**
+ * @tie:markdown
+ * # Hi
+ * This is content...
+ * ...
+ * **/
+```
+
+### Example
+
+> see [demo](example/demo.js)
 
 ```js
 /**
