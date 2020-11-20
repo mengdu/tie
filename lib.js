@@ -273,7 +273,7 @@ class Tie {
             } else {
                 // 提取注释内容（去掉首尾两行， 去掉第二行标记行）
                 request.markdown = request.raw.slice(2, request.raw.length - 1).map(e => {
-                    return e.raw.replace(/^((\/| +)\*?(( ?\*(\*\/)?)| ))/, '')
+                    return e.raw.replace(/^( +\*) ?/, '')
                 }).join('\n')
             }
             
