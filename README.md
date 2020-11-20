@@ -17,12 +17,12 @@ Extracting description to generate markdown document.
 
 Options:
   -V, --version       output the version number
-  --dest <dir>        Output folder
-  --log [enable]      Enable logs (default: "0")
-  --match <pattern>   Match pattern (default: "**/*.js")
-  -i --ignore <file>  Ignore file (default: "node_modules/**/*.js")
-  -b --bundle <file>  Bundle handler javascript file
-  --json [filename]   Output json to file
+  --dest <dir>        output folder
+  --log [enable]      enable logs (default: "0")
+  --match <pattern>   match pattern (default: "**/*.js")
+  -i --ignore <file>  ignore file (default: "node_modules/**/*.js")
+  -b --bundle <file>  bundle handler javascript file
+  --json [filename]   output json to file
   -h, --help          display help for command
 ```
 
