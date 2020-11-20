@@ -5,21 +5,23 @@ Library for interface description extraction.
 ## CLI
 
 ```
-tie controller docs --match="**/*.js" --ignore="node_modules/**/*"
+tie controller --dest=docs --match="**/*.js" --ignore="node_modules/**/*"
 ```
 
 > The interface description under the 'controller' folder will be extracted and documents will be generated to the 'docs' folder.
 
 ```
-Usage: tie [options] <entry> <dest>
+Usage: tie [options] <entry>
 
 Extracting description to generate markdown document.
 
 Options:
   -V, --version       output the version number
+  --dest <dir>        Output folder
+  --log [enable]      Enable logs (default: "0")
   --match <pattern>   Match pattern (default: "**/*.js")
   -i --ignore <file>  Ignore file (default: "node_modules/**/*.js")
-  -b --bundle <file>  Javascript bundle handler
+  -b --bundle <file>  Bundle handler javascript file
   --json [filename]   Output json to file
   -h, --help          display help for command
 ```
