@@ -1,14 +1,31 @@
 # Tie
 
-Library for interface description extraction.
+Annotation Extraction & generating interface document.
+
+```sh
+npm install -g @lanyue/tie
+```
+
+**Library**
+
+```js
+const tie = require('@lanyue/tie')
+
+tie.parse(entry, options)
+
+// or
+const demo = new Tie('api') // Defining block Tags @tie => @api
+
+demo.parse(entry, options)
+```
 
 ## CLI
 
 ```
-tie controller --dest=docs --match="**/*.js" --ignore="node_modules/**/*"
+tie controller/ --dest=docs
 ```
 
-> The interface description under the 'controller' folder will be extracted and documents will be generated to the 'docs' folder.
+It will generated documents to the docs folder.
 
 ```
 Usage: tie [options] <entry>
@@ -32,22 +49,22 @@ bundle.js
 // bundle.js
 
 // Custom rendering handler
-exports.render = async function (requests, file, filename) {
-  console.log(requests)
-  
-  // Redefining rendering
-	return '# Hi'
+exports.render = async function ({ chunks, file, filename, meta, metaMarkdown }) {
+    console.log(file)
+
+    // Redefining rendering
+    return '# Hi'
 }
 
 // Do something else when you're done
 exports.done = async function (files) {
-	console.log(files.length)
+    console.log(files.length)
 }
 ```
 
 ## Pattern
 
-+ `@tie` 标记接口，有标记的注释才会呗解析，放在注释开头
++ `@tie` 标记接口，有标记的注释才会被解析，放在注释开头
 + `@tie:<type>` 标记块类型，目前有 `meta`，`markdown` 类型
 + `@title` 接口名称
 + `@des` 接口说明
@@ -66,7 +83,7 @@ exports.done = async function (files) {
 
 **tie:meta**
 
-meta 信息块
+Meta block
 
 ```js
 /**
@@ -80,7 +97,7 @@ meta 信息块
 
 **tie:markdown**
 
-meta 信息块
+Markdown block
 
 ```js
 /**
@@ -172,3 +189,7 @@ Log on user
 + [ohter@gmail.com](#)
 
 ````
+
+## LICENSE
+
+[MIT](LICENSE)

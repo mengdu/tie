@@ -1,7 +1,7 @@
 {
-  "name": "tie",
+  "name": "@lanyue/tie",
   "version": "0.1.0",
-  "description": "Library for interface description extraction",
+  "description": "Annotation Extraction & generating interface document.",
   "main": "index.js",
   "bin": {
     "tie": "cli.js"
@@ -13,7 +13,18 @@
     "tie",
     "doc"
   ],
-  "author": "lanyueos@qq.com",
+  "github": "https://github.com/mengdu/tie",
+  "repository": {
+    "type": "https",
+    "url": "git+https://github.com/mengdu/tie"
+  },
+  "bugs": {
+    "url": "https://github.com/mengdu/tie/issues"
+  },
+  "author": {
+    "name": "Lanyue",
+    "email": "lanyueos@qq.com"
+  },
   "license": "MIT",
   "dependencies": {
     "commander": "^6.2.0",

@@ -1,8 +1,8 @@
 // bundle.js
 
 // Custom rendering handler
-exports.render = async function (requests, file, filename) {
-    console.log(requests)
+exports.render = async function ({ chunks, file, filename, meta, metaMarkdown }) {
+    console.log(file)
 
     // Redefining rendering
     return '# Hi'
