@@ -69,13 +69,17 @@ async function main() {
         bundle: bundle,
         fn (file) {
             if (+program.log === 1) {
-                console.log(`[tie]: ${file.file} ${file.apis.length}`)
+                console.log(`[tie]: ${file.file} ${file.chunks.length}`)
             }
         }
     })
 
     if (output) {
-        fs.writeFileSync(dest ? path.resolve(dest, output) : output, JSON.stringify(data))
+        const arr = data.map(e => {
+            delete e.file
+            return e
+        })
+        fs.writeFileSync(dest ? path.resolve(dest, output) : output, JSON.stringify(arr))
     }
 }
 

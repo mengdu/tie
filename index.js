@@ -22,7 +22,7 @@ async function parse (entry, options) {
         const filename = files[i]
         const file = path.resolve(entry, filename)
         const code = await util.promisify(fs.readFile)(file, { encoding: 'utf-8' })
-        const apis = tie.toMarkdown(code)
+        const chunks = tie.toMarkdown(code)
         const metaArr = [
             { key: 'filename', value: filename },
             { key: 'createdAt', value: Date.now() }
@@ -30,9 +30,9 @@ async function parse (entry, options) {
         const meta = {}
 
         // 取 meta
-        for (const j in apis) {
-            if (apis[j].chunkType === 'meta') {
-                apis[j].raw.filter(e => e.symbol).forEach(e => {
+        for (const j in chunks) {
+            if (chunks[j].chunkType === 'meta') {
+                chunks[j].raw.filter(e => e.symbol).forEach(e => {
                     metaArr.push({ key: e.symbol, value: e.text })
                 })
             }
@@ -43,32 +43,33 @@ async function parse (entry, options) {
             return `${e.key}: ${e.value}`
         }).join('\n')
 
-        let markdown = ''
-
-        if (options.bundle && typeof options.bundle.render === 'function') {
-            markdown = await options.bundle.render(apis, filename, file)
-        } else {
-            markdown = apis.filter(e => e.chunkType !== 'meta').map(e => e.markdown).join('\n')
-            markdown = metaMarkdown ? `---\n${metaMarkdown}\n---\n\n` + markdown : markdown
-        }
-    
         const item = {
             file,
             filename,
-            apis: apis,
-            markdown: markdown,
+            chunks: chunks,
+            markdown: '',
+            metaMarkdown,
             meta
         }
 
+        if (options.bundle && typeof options.bundle.render === 'function') {
+            // 自定义渲染
+            item.markdown = await options.bundle.render(item)
+        } else {
+            const markdown = chunks.filter(e => e.chunkType !== 'meta').map(e => e.markdown).join('\n')
+            item.markdown = metaMarkdown ? `---\n${metaMarkdown}\n---\n\n` + markdown : markdown
+        }
+    
         arr.push(item)
 
-        if (options.dest && markdown) {
+        // 定义了输出和块不为空才写文件
+        if (options.dest && chunks.length > 0) {
             const docFile = path.resolve(options.dest, filename.replace(path.extname(filename), '.md'))
             const dir = path.dirname(docFile)
             if (!fs.existsSync(dir)) {
                 fs.mkdirSync(dir, { recursive: true })
             }
-            await util.promisify(fs.writeFile)(docFile, markdown)
+            await util.promisify(fs.writeFile)(docFile, item.markdown)
         }
 
         if (typeof options.fn === 'function') {
