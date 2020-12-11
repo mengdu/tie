@@ -15,7 +15,9 @@ async function parse (entry, options) {
         ignore: options.ignore || []
     })
 
-    const tie = new lib()
+    const tie = new lib({
+        ...options.tieOptions
+    })
     const arr = []
 
     for (const i in files) {
@@ -24,8 +26,8 @@ async function parse (entry, options) {
         const code = await util.promisify(fs.readFile)(file, { encoding: 'utf-8' })
         const chunks = tie.toMarkdown(code)
         const metaArr = [
-            { key: 'filename', value: filename },
-            { key: 'createdAt', value: Date.now() }
+            // { key: 'filename', value: filename },
+            // { key: 'createdAt', value: Date.now() }
         ]
         const meta = {}
 

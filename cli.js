@@ -18,7 +18,7 @@ program
     .option('-i --ignore <file>', 'ignore file', 'node_modules/**/*.js')
     .option('-b --bundle <file>', 'bundle handler javascript file')
     .option('--json [filename]', 'output json to file')
-    // .option('-c --config <file>', 'Specify configuration file.')
+    .option('--flag [flag]', 'flag for block', 'tie')
     .parse(process.argv)
 
 async function main() {
@@ -67,6 +67,9 @@ async function main() {
         pattern: pattern,
         ignore: ignore,
         bundle: bundle,
+        tieOptions: {
+            tag: program.flag
+        },
         fn (file) {
             if (+program.log === 1) {
                 console.log(`[tie]: ${file.file} ${file.chunks.length}`)
