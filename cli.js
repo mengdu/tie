@@ -10,7 +10,7 @@ const program = new Command()
 program
     .name('tie')
     .version(pkg.version)
-    .description('Extracting description to generate markdown document.')
+    .description('A tool for generating api document from source code.')
     .arguments('<entry>')
     .option('--dest <dir>', 'output folder')
     .option('--log [enable]', 'enable logs', '0')

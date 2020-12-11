@@ -1,6 +1,6 @@
 # Tie
 
-Annotation Extraction & generating interface document.
+A tool for generating api document from source code.
 
 ```sh
 npm install -g @lanyue/tie
@@ -10,24 +10,22 @@ npm install -g @lanyue/tie
 
 ```js
 const tie = require('@lanyue/tie')
-
 tie.parse(entry, options)
 
 // or
-const demo = new Tie('api') // Defining block Tags @tie => @api
-
-demo.parse(entry, options)
+const demo = new tie.Tie({ tag: 'api' }) // Defining block tags @tie => @api
+demo.parse(text)
 ```
 
 ## CLI
 
-```
+```sh
 tie controller/ --dest=docs
 ```
 
 It will generated documents to the docs folder.
 
-```
+```sh
 Usage: tie [options] <entry>
 
 Extracting description to generate markdown document.
@@ -133,7 +131,7 @@ Markdown block
  * @response {string} token Session Token
  * @example example/login
  * **/
-function Login () {}
+function Func () {}
 ```
 
 Will be generated
@@ -190,6 +188,36 @@ Log on user
 
 ````
 
+**Support multi line comments**
+
+```js
+// @tie
+// ...
+// ...
+// @tieEnd
+
+
+// @tie
+// @author lanyueos@qq.com,ohter@gmail.com
+// @version 1.0
+// @code 0,10,200
+// @tags login,sign-in
+// @change Add feature 1 (2020-11-17)
+// @change Add feature 2 (2020-11-18)
+// @route POST /foo
+// @title Sign In
+// @des Log on user
+// @query {number} [page=1] Page number
+// @query {number} [page=] Page size
+// @query {number} [pageSize=10] Page size
+// @body {string} username Username
+// @body {string} password Password
+// @response {object} data User Profile
+// @response {string} token Session Token
+// @example example/login
+// @tieEnd
+function Foo () {}
+```
 ## LICENSE
 
 [MIT](LICENSE)

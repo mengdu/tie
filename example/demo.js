@@ -4,19 +4,18 @@
  * @description This is a demo.
  * @author lanyueos@qq.com
  * **/
+const fs = require('fs')
+const path = require('path')
+const lib = require('../index')
 
 /**
  * @tie:markdown
- * 
  * # Demo
  * 
  * > This is a demo.
  * 
+ * ...
  * **/
-
-const fs = require('fs')
-const path = require('path')
-const lib = require('../index')
 
 /**
  * @tie
@@ -56,12 +55,35 @@ function Index () {}
  * **/
 function Login () {}
 
-/**
- * @param {number} key
- * **/
+// @tie
+// @author lanyueos@qq.com
+// @version 1.0
+// @code 0,10,200
+// @tags login,sign-in
+// @change Add feature 1 (2020-11-17)
+// @change Add feature 2 (2020-11-18)
+// @route POST /foo
+// @title This is a demo.
+// @des Do foo
+// @query {number} [page=1] Page number
+// @query {number} [page=] Page size
+// @query {number} [pageSize=10] Page size
+// @body {string} username Username
+// @body {string} password Password
+// @response {object} data User Profile
+// @response {string} token Session Token
+// @example example/login
+// @tieEnd
+function Foo () {}
 
-/** sdf **/
-// const code = fs.readFileSync('./demo.js', 'utf-8')
+// @tie:markdown
+// 
+// # Hello !
+// 
+// > This is markdown content.
+// @tieEnd
+
+const code = fs.readFileSync(path.resolve(__dirname, './demo.js'), 'utf-8')
 
 // const tie = new lib.Tie()
 
@@ -77,7 +99,6 @@ function Login () {}
 // tie.parseKey({ symbol: 'key2', text: '{number} [page] 页码' })
 // tie.parseKey({ symbol: 'key2', text: '{number} [page=1] 页码' })
 
-
 lib.parse(path.resolve(__dirname, './'), {
     dest: path.resolve(__dirname, './docs'),
     ignore: [
@@ -91,27 +112,6 @@ lib.parse(path.resolve(__dirname, './'), {
     fs.writeFileSync(path.resolve(__dirname, './data.json'), JSON.stringify(data))
 })
 
-t = new lib.Tie()
-
-// const data = t.toMarkdown(`
-//     /**
-//      * @tie:meta
-//      * @title demo
-//      * @group user
-//      * **/
-
-//     /**
-//      * @tie:md
-//      * ## 说明
-//      * 
-//      * > xxxx
-//      * 
-//      * + sdf
-//      * + asdf
-//      * + sdf
-//      * 
-//      * [](../aaa)
-//      **/
-//     `)
-
+// t = new lib.Tie()
+// const data = t.toMarkdown(code)
 // console.log(data)

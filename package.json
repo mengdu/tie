@@ -1,7 +1,7 @@
 {
   "name": "@lanyue/tie",
   "version": "0.1.0",
-  "description": "Annotation Extraction & generating interface document.",
+  "description": "A tool for generating api document from source code.",
   "main": "index.js",
   "bin": {
     "tie": "cli.js"
