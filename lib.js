@@ -94,10 +94,18 @@ function toMarkdown (request) {
 }
 
 class Tie {
-    constructor (tag) {
-        this.TAG = tag || 'tie'
-        // /\/\*\*\W*\*\W*tie\W?[\w\W]*?\*\*\//g
-        this.chunkRegExp = new RegExp(`\\/\\*\\*\\W*\\*\\W*@${this.TAG}\W?[\\w\\W]*?\\*\\*\\/`, 'g')
+    constructor (options) {
+        options = options || {}
+
+        this.TAG = options.tag || 'tie'
+
+        // /\/\*\W*\*\W*tie\W?[\w\W]*?\*\//g
+        const multiLine = `\\/\\*\\W*\\*\\W*@${this.TAG}\W?[\\w\\W]*?\\*\\/`
+
+        // /\/\/\W*@tie([\W\w]*?)\/\/\W*@tieEnd/
+        const singleLine = `\\/\\/\\W*@${this.TAG}\W?[\\w\\W]*?\\/\\/\\W*@${this.TAG}End`
+
+        this.chunkRegExp = new RegExp(`(${multiLine}|${singleLine})`, 'g')
         this.tagLineRegExp = new RegExp(`^\\W*@${this.TAG}`, 'i')
         this.chunkTypeRegExp = new RegExp(`@${this.TAG}:(.+)`, 'i')
     }
@@ -251,33 +259,34 @@ class Tie {
     }
 
     toMarkdown (text) {
-        return this.toRequest(text).map(request => {
+        return this.toRequest(text).map(chunk => {
             let chunkType = 'api'
-            for (const i in request.raw) {
-                if (this.tagLineRegExp.test(request.raw[i].raw)) {
-                    const arr = request.raw[i].raw.match(this.chunkTypeRegExp)
+            for (const i in chunk.raw) {
+                if (this.tagLineRegExp.test(chunk.raw[i].raw)) {
+                    const arr = chunk.raw[i].raw.match(this.chunkTypeRegExp)
                     if (arr) {
                         chunkType = arr[1].toLowerCase()
                     }
                 }
             }
 
-            request.chunkType = chunkType
+            chunk.chunkType = chunkType
             if (chunkType === 'meta') {
                 // 生成meta信息
-                request.markdown = '---\n' + request.raw.filter(e => e.symbol).map(e => {
+                chunk.markdown = '---\n' + chunk.raw.filter(e => e.symbol).map(e => {
                     return `${e.symbol}: ${e.text}`
                 }).join('\n') + '\n---\n'
             } else if (chunkType === 'api') {
-                request.markdown = toMarkdown(request)
+                chunk.markdown = toMarkdown(chunk)
             } else {
                 // 提取注释内容（去掉首尾两行， 去掉第二行标记行）
-                request.markdown = request.raw.slice(2, request.raw.length - 1).map(e => {
-                    return e.raw.replace(/^( +\*) ?/, '')
-                }).join('\n')
+                chunk.markdown = chunk.raw.slice(2, chunk.raw.length - 1).map(e => {
+                    // 去掉前面的 '*' 或者 '//'
+                    return e.raw.replace(/^( *(\*|\/\/)) ?/, '')
+                }).join('\n') + '\n'
             }
             
-            return request
+            return chunk
         })
     }
 }
